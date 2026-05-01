@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+pytest
+google-cloud-secret-manager
