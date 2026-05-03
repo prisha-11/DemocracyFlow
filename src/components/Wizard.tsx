@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOCAL_ELECTION_MILESTONES, NATIONAL_ELECTION_MILESTONES } from '../constants/electionData';
 import PollingMap from './PollingMap';

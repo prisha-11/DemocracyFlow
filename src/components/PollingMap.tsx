@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -27,7 +27,7 @@ export default function PollingMap() {
     setMap(map);
   }, []);
 
-  const onUnmount = useCallback(function callback(map: google.maps.Map) {
+  const onUnmount = useCallback(function callback() {
     setMap(null);
   }, []);
 
