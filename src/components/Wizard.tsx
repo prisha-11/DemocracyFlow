@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PollingMap from './PollingMap';
 import { logCustomEvent } from '../services/analytics';
