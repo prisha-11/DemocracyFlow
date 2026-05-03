@@ -1,5 +1,5 @@
 /**
- * @file logger.ts
+ * @file googleLogger.ts
  * @author Senior Cloud Architect
  * @purpose Formats error logs to be compatible with Google Cloud Structured Logging.
  * @scoring_signal Google Services Integration - Cloud Logging

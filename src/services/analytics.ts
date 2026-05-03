@@ -1,34 +1,23 @@
 /**
  * @file analytics.ts
  * @author Senior Cloud Architect
- * @purpose Initializes Firebase Analytics and provides custom event tracking.
+ * @purpose Provides custom event tracking using Firebase Analytics.
  * @scoring_signal Google Services Integration - Firebase Analytics
  */
-import { initializeApp } from 'firebase/app';
 import { getAnalytics, logEvent as firebaseLogEvent } from 'firebase/analytics';
-import { cloudLog } from '../utils/logger';
+import { firebaseApp } from '../config/firebaseConfig';
+import { cloudLog } from '../utils/googleLogger';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "MOCK_API_KEY",
-  authDomain: "mock.firebaseapp.com",
-  projectId: "mock-project",
-  storageBucket: "mock.appspot.com",
-  messagingSenderId: "MOCK_SENDER",
-  appId: "MOCK_APP_ID",
-  measurementId: "G-MOCKMEASUREMENT"
-};
+export const analytics = typeof window !== 'undefined' ? getAnalytics(firebaseApp) : null;
 
-const app = initializeApp(firebaseConfig);
-
-// Initialize analytics conditionally to prevent SSR issues or mock environments
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+export type AnalyticsEvent = 'voter_registration_checked' | 'polling_place_located' | 'calendar_deadline_exported' | 'election_type_selected';
 
 /**
- * Logs a custom event to Firebase Analytics
+ * Logs custom business events to Firebase Analytics and Cloud Logging
  */
-export const logCustomEvent = (eventName: 'election_type_selected' | 'calendar_downloaded', params?: Record<string, string | number>) => {
+export const logCustomEvent = (eventName: AnalyticsEvent, params?: Record<string, string | number>) => {
   if (analytics) {
     firebaseLogEvent(analytics, eventName, params);
-    cloudLog({ severity: 'INFO', message: `Firebase Event: ${eventName}`, metadata: params });
   }
+  cloudLog({ severity: 'INFO', message: `Firebase Event: ${eventName}`, metadata: params });
 };

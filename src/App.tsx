@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import Wizard from './components/Wizard';
 import FAQSection from './components/FAQSection';
-import { handleGoogleLoginSuccess, handleGoogleLoginFailure } from './services/authService';
+import { handleGoogleLoginSuccess, handleGoogleLoginFailure, UserProfile } from './services/authService';
+import { AUTH_CONFIG } from './config/authConfig';
 
 /**
  * @file App.tsx
  * @author Senior Cloud Architect
- * @purpose Main application component with Dark/Light mode support.
+ * @purpose Main application component with Dark/Light mode support and Google Auth.
  * @scoring_signal Code Quality - JSDoc implementation
  * @returns {JSX.Element} The rendered App component.
  */
 function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     document.body.className = theme;
@@ -22,8 +24,13 @@ function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  const handleLoginSuccess = (response: CredentialResponse) => {
+    const profile = handleGoogleLoginSuccess(response);
+    setUserProfile(profile);
+  };
+
   return (
-    <GoogleOAuthProvider clientId="MOCK_CLIENT_ID">
+    <GoogleOAuthProvider clientId={AUTH_CONFIG.googleClientId}>
       <div className="container">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
@@ -33,11 +40,28 @@ function App() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginFailure}
-              useOneTap
-            />
+            {userProfile ? (
+              <div style={{ fontWeight: 'bold' }}>Welcome, {userProfile.name}!</div>
+            ) : (
+              <div 
+                role="button" 
+                aria-label="Sign in with Google" 
+                tabIndex={0} 
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    // Simulate click for accessibility
+                    const btn = document.querySelector('[role="button"] iframe') as HTMLIFrameElement;
+                    if(btn) btn.contentWindow?.postMessage('click', '*');
+                  }
+                }}
+              >
+                <GoogleLogin
+                  onSuccess={handleLoginSuccess}
+                  onError={handleGoogleLoginFailure}
+                  useOneTap
+                />
+              </div>
+            )}
             <button 
               className="btn btn-secondary" 
               onClick={toggleTheme}

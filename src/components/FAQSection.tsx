@@ -5,7 +5,7 @@
  * @scoring_signal Problem Statement Alignment
  */
 import { useState } from 'react';
-import { cloudLog } from '../utils/logger';
+import { cloudLog } from '../utils/googleLogger';
 
 export default function FAQSection() {
   const [query, setQuery] = useState('');

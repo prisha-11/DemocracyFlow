@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LOCAL_ELECTION_MILESTONES, NATIONAL_ELECTION_MILESTONES } from '../constants/electionData';
+import { LOCAL_ELECTION_MILESTONES, NATIONAL_ELECTION_MILESTONES } from '../config/electionConfig';
 import PollingMap from './PollingMap';
 import { logCustomEvent } from '../services/analytics';
 
@@ -49,7 +49,7 @@ export default function Wizard() {
    * Includes specific event description and a 24-hour reminder alarm.
    */
   const handleDownloadCalendar = () => {
-    logCustomEvent('calendar_downloaded');
+    logCustomEvent('calendar_deadline_exported');
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Democracy Navigator//EN
@@ -155,7 +155,9 @@ END:VCALENDAR`;
             <h2 aria-label={`Current Step: ${milestones[step - 1].title}`}>Step {step}: {milestones[step - 1].title}</h2>
             
             {step === 2 && (
-              <PollingMap />
+              <div onClick={() => logCustomEvent('polling_place_located')}>
+                <PollingMap />
+              </div>
             )}
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
