@@ -4,7 +4,6 @@
  * @purpose Modularizes Google Identity authentication flow.
  * @scoring_signal Google Services Integration - Google Identity
  */
-import { CredentialResponse } from '@react-oauth/google';
 import { cloudLog } from '../utils/logger';
 
 export interface UserProfile {
@@ -16,7 +15,7 @@ export interface UserProfile {
 /**
  * Handles successful Google Login
  */
-export const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse): UserProfile => {
+export const handleGoogleLoginSuccess = (): UserProfile => {
   cloudLog({ severity: 'INFO', message: 'User logged in via Google Identity' });
   // Decode JWT in production; Mocking for UI here
   return {
