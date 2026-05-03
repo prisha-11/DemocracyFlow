@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LOCAL_ELECTION_MILESTONES, NATIONAL_ELECTION_MILESTONES } from '../config/electionConfig';
 import PollingMap from './PollingMap';
 import { logCustomEvent } from '../services/analytics';
-
-type Milestone = {
-  id: number;
-  title: string;
-  status: string;
-};
+import { useElectionLogic } from '../hooks/useElectionLogic';
 
 /**
  * @file Wizard.tsx
@@ -18,35 +12,9 @@ type Milestone = {
  * @returns {JSX.Element} The rendered Wizard component.
  */
 export default function Wizard() {
-  const [step, setStep] = useState(0);
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [announcement, setAnnouncement] = useState("");
+  const { step, milestones, loading, announcement, fetchMilestones, handleNext, handleBack, reset } = useElectionLogic();
 
   /**
-   * Fetches the election milestones based on the election type.
-   * @param {'local' | 'national'} type - The type of election.
-   */
-  const fetchMilestones = async (type: 'local' | 'national') => {
-    setLoading(true);
-    logCustomEvent('election_type_selected', { type });
-    try {
-      setTimeout(() => {
-        const selectedMilestones = type === 'local' ? LOCAL_ELECTION_MILESTONES : NATIONAL_ELECTION_MILESTONES;
-        setMilestones(selectedMilestones);
-        setLoading(false);
-        setStep(1);
-        setAnnouncement(`Step 1 of 3: ${selectedMilestones[0].title}`);
-      }, 600);
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Generates and triggers download for an ICS calendar file for Election Day.
-   * Includes specific event description and a 24-hour reminder alarm.
    */
   const handleDownloadCalendar = () => {
     logCustomEvent('calendar_deadline_exported');
@@ -74,22 +42,6 @@ END:VCALENDAR`;
     a.download = 'election_day_2026.ics';
     a.click();
     window.URL.revokeObjectURL(url);
-  };
-
-  const handleNext = () => {
-    const nextStep = step + 1;
-    setStep(nextStep);
-    if (nextStep <= milestones.length) {
-      setAnnouncement(`Step ${nextStep} of 3: ${milestones[nextStep - 1].title}`);
-    } else {
-      setAnnouncement("All steps completed.");
-    }
-  };
-
-  const handleBack = () => {
-    const prevStep = step - 1;
-    setStep(prevStep);
-    setAnnouncement(`Step ${prevStep} of 3: ${milestones[prevStep - 1].title}`);
   };
 
   const totalSteps = milestones.length > 0 ? milestones.length : 1;
@@ -200,7 +152,7 @@ END:VCALENDAR`;
           >
             <h2 aria-label="Completion Status Header">All Done!</h2>
             <p>You are ready to vote. Thank you for participating in democracy.</p>
-            <button className="btn" onClick={() => { setStep(0); setAnnouncement("Restarted guide."); }} aria-label="Restart Election Guide Wizard Button">Start Over</button>
+            <button className="btn" onClick={reset} aria-label="Restart Election Guide Wizard Button">Start Over</button>
           </motion.div>
         )}
       </AnimatePresence>

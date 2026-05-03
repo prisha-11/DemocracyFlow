@@ -70,6 +70,11 @@ body.light .btn { color: #ffffff; }
   transform: translateY(-2px);
 }
 
+[role="button"]:focus-visible, .btn:focus-visible {
+  outline: 3px solid #1a73e8;
+  outline-offset: 2px;
+}
+
 /* Accessibility: Keyboard navigation focus */
 .btn:focus {
   outline: 3px solid var(--focus-ring);
